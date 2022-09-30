@@ -46,6 +46,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -140,6 +141,17 @@ public class RegistryDirectory<T> extends DynamicDirectory<T> {
         }
     }
 
+    @Override
+    public synchronized void notifyUrlDisable(List<URL> urls) {
+        if (isDestroyed()) {
+            return;
+        }
+        Set<URL> localCacheUrls = this.cachedInvokerUrls;
+        List<URL> newUrls = localCacheUrls.stream().filter(url -> !urls.contains(url)).collect(Collectors.toList());
+        refreshOverrideAndInvoker(newUrls);
+    }
+
+    // update invokers
     @Override
     public synchronized void notify(List<URL> urls) {
         if (isDestroyed()) {

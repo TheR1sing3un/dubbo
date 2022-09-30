@@ -257,6 +257,7 @@ public class ReferenceConfig<T> extends ReferenceConfigBase<T> {
             }
 
             // init serviceMetadata
+            // 初始化服务的元数据
             initServiceMetadata(consumer);
 
             serviceMetadata.setServiceType(getServiceInterfaceClass());
@@ -285,12 +286,14 @@ public class ReferenceConfig<T> extends ReferenceConfigBase<T> {
 
             serviceMetadata.getAttachments().putAll(referenceParameters);
 
+            // 创建引用代理
             ref = createProxy(referenceParameters);
 
             serviceMetadata.setTarget(ref);
             serviceMetadata.addAttribute(PROXY_CLASS_REF, ref);
 
             consumerModel.setDestroyCaller(getDestroyRunner());
+            // 设置代理为该consumerModel的饮用
             consumerModel.setProxyObject(ref);
             consumerModel.initMethodModels();
 
@@ -420,6 +423,7 @@ public class ReferenceConfig<T> extends ReferenceConfigBase<T> {
                     aggregateUrlFromRegistry(referenceParameters);
                 }
             }
+            // 创建远程的Invoker
             createInvokerForRemote();
         }
 
@@ -436,6 +440,7 @@ public class ReferenceConfig<T> extends ReferenceConfigBase<T> {
         MetadataUtils.publishServiceDefinition(consumerUrl, consumerModel.getServiceModel(), getApplicationModel());
 
         // create service proxy
+        // 从代理工厂中生成该invoker的代理类
         return (T) proxyFactory.getProxy(invoker, ProtocolUtils.isGeneric(generic));
     }
 
@@ -543,6 +548,7 @@ public class ReferenceConfig<T> extends ReferenceConfigBase<T> {
                 String cluster = registryUrl.getParameter(CLUSTER_KEY, ZoneAwareCluster.NAME);
                 // The invoker wrap sequence would be: ZoneAwareClusterInvoker(StaticDirectory) -> FailoverClusterInvoker
                 // (RegistryDirectory, routing happens here) -> Invoker
+                // 实际创建invoker
                 invoker = Cluster.getCluster(registryUrl.getScopeModel(), cluster, false).join(new StaticDirectory(registryUrl, invokers), false);
             } else {
                 // not a registry url, must be direct invoke.

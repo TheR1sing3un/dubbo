@@ -16,9 +16,11 @@
  */
 package org.apache.dubbo.qos.command.impl;
 
+import org.apache.dubbo.common.URL;
 import org.apache.dubbo.common.logger.Logger;
 import org.apache.dubbo.common.logger.LoggerFactory;
 import org.apache.dubbo.common.utils.ArrayUtils;
+import org.apache.dubbo.rpc.GracefullyShutdownManager;
 import org.apache.dubbo.qos.command.BaseCommand;
 import org.apache.dubbo.qos.command.CommandContext;
 import org.apache.dubbo.registry.Registry;
@@ -72,6 +74,7 @@ public class BaseOffline implements BaseCommand {
                 for (ProviderModel.RegisterStatedURL statedURL : statedUrls) {
                     if (statedURL.isRegistered()) {
                         doUnexport(statedURL);
+                        reportOffline(statedURL.getProviderUrl());
                     }
                 }
             }
@@ -86,5 +89,9 @@ public class BaseOffline implements BaseCommand {
         Registry registry = registryFactory.getRegistry(statedURL.getRegistryUrl());
         registry.unregister(statedURL.getProviderUrl());
         statedURL.setRegistered(false);
+    }
+
+    private void reportOffline(URL providerServiceURL) {
+        GracefullyShutdownManager.getInstance().addStoppingProviderService(providerServiceURL);
     }
 }

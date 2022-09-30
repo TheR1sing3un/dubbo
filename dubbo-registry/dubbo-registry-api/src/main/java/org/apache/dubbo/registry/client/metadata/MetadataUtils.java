@@ -146,6 +146,7 @@ public class MetadataUtils {
 
         consumerModel.getServiceMetadata().setTarget(metadataService);
         consumerModel.getServiceMetadata().addAttribute(PROXY_CLASS_REF, metadataService);
+        // 到这consuerModel的代理类
         consumerModel.setProxyObject(metadataService);
         consumerModel.initMethodModels();
 

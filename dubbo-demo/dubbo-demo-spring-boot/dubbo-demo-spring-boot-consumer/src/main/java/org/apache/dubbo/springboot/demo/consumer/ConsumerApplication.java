@@ -30,7 +30,7 @@ import org.springframework.stereotype.Service;
 @EnableDubbo
 public class ConsumerApplication {
 
-    @DubboReference
+    @DubboReference(filter = "hiFilter")
     private DemoService demoService;
 
     public static void main(String[] args) {

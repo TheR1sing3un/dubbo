@@ -487,6 +487,7 @@ public class RegistryProtocol implements Protocol, ScopeModelAware {
         return doRefer(cluster, registry, type, url, qs);
     }
 
+    // 实际refer
     protected <T> Invoker<T> doRefer(Cluster cluster, Registry registry, Class<T> type, URL url, Map<String, String> parameters) {
         Map<String, Object> consumerAttribute = new HashMap<>(url.getAttributes());
         consumerAttribute.remove(REFER_KEY);

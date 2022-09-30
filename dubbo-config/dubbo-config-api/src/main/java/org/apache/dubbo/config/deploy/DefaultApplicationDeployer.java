@@ -763,7 +763,7 @@ public class DefaultApplicationDeployer extends AbstractDeployer<ApplicationMode
                 return;
             }
             onStopping();
-
+            // destroy registries
             destroyRegistries();
             destroyServiceDiscoveries();
             destroyMetadataReports();

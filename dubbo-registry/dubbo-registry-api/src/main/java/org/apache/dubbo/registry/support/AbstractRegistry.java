@@ -87,8 +87,12 @@ public abstract class AbstractRegistry implements Registry {
     private final ExecutorService registryCacheExecutor;
     private final AtomicLong lastCacheChanged = new AtomicLong();
     private final AtomicInteger savePropertiesRetryTimes = new AtomicInteger();
+    // registered urls
     private final Set<URL> registered = new ConcurrentHashSet<>();
+    // subscribed map, subscribed service url -> []NotifyListener
     private final ConcurrentMap<URL, Set<NotifyListener>> subscribed = new ConcurrentHashMap<>();
+
+    // subscribed map, subscribed service url -> { serviceType{providers|configurations|routers} -> []real serviceProviderAddressUrl }
     private final ConcurrentMap<URL, Map<String, List<URL>>> notified = new ConcurrentHashMap<>();
     // Is it synchronized to save the file
     private boolean syncSaveFile;
@@ -405,9 +409,12 @@ public abstract class AbstractRegistry implements Registry {
             return;
         }
 
+        // 循环所有的订阅的service
+        // 拿到每一个serviceUrl和其上注册的通知监听器
         for (Map.Entry<URL, Set<NotifyListener>> entry : getSubscribed().entrySet()) {
             URL url = entry.getKey();
 
+            // 当这个订阅的服务不是当前注册的服务则跳过,也就是需要找到当前订阅的服务列表中和url(0)相同的服务的通知监听器
             if (!UrlUtils.isMatch(url, urls.get(0))) {
                 continue;
             }
